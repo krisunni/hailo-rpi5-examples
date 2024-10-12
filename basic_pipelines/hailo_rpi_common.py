@@ -118,6 +118,8 @@ def get_source_type(input_source):
     else:
         if input_source.startswith("rpi"):
             return 'rpi'
+        if input_source.startswith("rtsp"):
+            return 'rtsp'
         else:
             return 'file'
 
@@ -163,6 +165,13 @@ def SOURCE_PIPELINE(video_source, video_format='RGB', video_width=640, video_hei
         source_element = (
             f'v4l2src device={video_source} name={name} ! '
             'video/x-raw, width=640, height=480 ! '
+        )
+    elif source_type == 'rtsp':
+        print("Using RTSP")
+        source_element = (
+        f"rtspsrc location={video_source} name=src_0 ! "
+        "rtph264depay ! h264parse ! avdec_h264 max-threads=2 ! "
+        "video/x-raw, format=I420 ! "
         )
     else:
         source_element = (
